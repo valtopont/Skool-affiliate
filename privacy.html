@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Adatkezelési tájékoztató – Váltópont</title>
+  <link rel="icon" href="favicon.ico" sizes="any">
+  <style>
+    :root { --hatter: #050b16; --szoveg: #e6edf7; --halvany: #c0cde0; --narancs: #f28c28; --vonal: rgba(159, 182, 214, .2); }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--hatter); color: var(--szoveg); font: 1rem/1.65 system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; }
+    main { width: min(100% - 40px, 760px); margin: 0 auto; padding: 48px 0 64px; }
+    h1 { font-size: clamp(1.75rem, 1.3rem + 2vw, 2.5rem); line-height: 1.15; margin: 0 0 8px; }
+    h2 { font-size: 1.25rem; margin: 36px 0 8px; padding-top: 20px; border-top: 1px solid var(--vonal); }
+    p, li { color: var(--halvany); }
+    a { color: #ffd9a0; }
+    .helyorzo { color: var(--narancs); font-weight: 700; }
+    .tervezet { padding: 14px 16px; border: 1px dashed var(--narancs); border-radius: 12px; color: var(--szoveg); }
+    table { width: 100%; border-collapse: collapse; font-size: .9375rem; }
+    th, td { text-align: left; vertical-align: top; padding: 8px 6px; border-bottom: 1px solid var(--vonal); color: var(--halvany); }
+    th { color: var(--szoveg); }
+  </style>
+</head>
+<body>
+<main>
+  <!-- TERVEZET. A „HELYŐRZŐ” részeket és ezt a dobozt a jogi ellenőrzés után kell kitölteni/törölni.
+       Amíg tervezet, a _config.yml kizárja a buildből, és az analytics-config.js privacyUrl mezője üres. -->
+  <p class="tervezet">TERVEZET – nem publikált változat. A narancs színű helyőrzők jogi döntésre várnak.</p>
+
+  <h1>Adatkezelési tájékoztató</h1>
+  <p>Hatályos: <span class="helyorzo">[HELYŐRZŐ: dátum]</span></p>
+
+  <h2>1. Ki kezeli az adatokat?</h2>
+  <p>Adatkezelő: <span class="helyorzo">[HELYŐRZŐ: az üzemeltető neve – jogi döntés után]</span><br>
+     Elérhetőség: <span class="helyorzo">[HELYŐRZŐ: kapcsolati e-mail-cím]</span><br>
+     <span class="helyorzo">[HELYŐRZŐ: további kötelező azonosító adatok, ha a jogi ellenőrzés szerint szükségesek]</span></p>
+
+  <h2>2. Mire való ez az oldal?</h2>
+  <p>A valtopontonline.hu egy ajánlói (affiliate) bemutatóoldal. A Skoolon működő „Szabadúszó, Affiliate Közösség”-et mutatja be, amelyet nem a Váltópont üzemeltet. Az oldalon nincs regisztráció, űrlap vagy fizetés; a csatlakozás és a fizetés a Skoolon történik.</p>
+
+  <h2>3. Milyen adatokat kezelünk?</h2>
+
+  <h3>a) Látogatásmérés (Google Analytics 4) – csak a hozzájárulásoddal</h3>
+  <p>Ha az oldal alján megjelenő sávban az „Elfogadom” gombot választod, a Google Analytics 4 méri:</p>
+  <ul>
+    <li>az oldal megtekintését (oldalcím, a hivatkozó oldal domainje, az oldal címe legfeljebb négy kampányparaméterrel: utm_source, utm_medium, utm_campaign, utm_content);</li>
+    <li>a Skool-gombokra kattintást (melyik gomb, a gomb felirata, a kampányparaméterek).</li>
+  </ul>
+  <p>A mérés sütiket használ: <code>_ga</code> és <code>_ga_&lt;azonosító&gt;</code>. <span class="helyorzo">[HELYŐRZŐ: a sütik élettartama a Google aktuális dokumentációja szerint]</span></p>
+  <p>A döntésedet a böngésződ helyi tárolójában (<code>valtopont_analytics_consent</code>) őrizzük 365 napig, hogy ne kérdezzünk újra minden látogatáskor.</p>
+  <p>Ha elutasítod vagy nem döntesz, a Google Analytics nem töltődik be, és rólad nem készül mérés. A döntésedet az oldal alján, a „Süti-beállítások” gombbal bármikor megváltoztathatod; visszavonáskor a mérés leáll, és az oldal megkísérli törölni a GA-sütiket. A már elküldött adatokat ez nem törli.</p>
+  <p>Hirdetési célú tárolás és személyre szabás nincs bekapcsolva (Google Consent Mode: ad_storage, ad_user_data, ad_personalization mindig „denied”). Meta Pixel nincs az oldalon.</p>
+  <p>Megőrzés a Google Analyticsben: <span class="helyorzo">[HELYŐRZŐ: 2 vagy 14 hónap, a GA4-beállítás szerint]</span><br>
+     Címzett: <span class="helyorzo">[HELYŐRZŐ: a Google szolgáltató megnevezése és az adattovábbítás (EU-n kívül) jogi alapja – jogi ellenőrzés után]</span></p>
+
+  <h3>b) Tárhely és technikai naplók</h3>
+  <p>Az oldalt a GitHub Pages szolgálja ki. A szolgáltató a működéshez technikai adatokat (például IP-címet) naplózhat. <span class="helyorzo">[HELYŐRZŐ: a tárhelyszolgáltató megnevezése, szerepe és a naplózás leírása – jogi ellenőrzés után]</span></p>
+
+  <h3>c) Ha e-mailt írsz</h3>
+  <p>Ha a kapcsolati címre írsz, az e-mailben megadott adataidat a válaszadáshoz kezeljük. <span class="helyorzo">[HELYŐRZŐ: jogalap, megőrzési idő, levelezőszolgáltató]</span></p>
+
+  <h3>d) A Skool-oldal</h3>
+  <p>A gombok a Skool külső oldalára visznek. Ott a Skool saját adatkezelési feltételei érvényesek. Az ajánlói link egy azonosítót (ref) tartalmaz, amely alapján a Skool a csatlakozást a Váltópont üzemeltetőjéhez rendelheti. <span class="helyorzo">[HELYŐRZŐ: link a Skool adatkezelési tájékoztatójára]</span></p>
+
+  <h2>4. Jogalap</h2>
+  <table>
+    <tr><th>Adatkezelés</th><th>Jogalap</th></tr>
+    <tr><td>Látogatásmérés (GA4)</td><td>Hozzájárulás (GDPR 6. cikk (1) a) pont)</td></tr>
+    <tr><td>Technikai naplók</td><td><span class="helyorzo">[HELYŐRZŐ: jogi döntés]</span></td></tr>
+    <tr><td>E-mailes kapcsolat</td><td><span class="helyorzo">[HELYŐRZŐ: jogi döntés]</span></td></tr>
+  </table>
+
+  <h2>5. Jogaid</h2>
+  <p>Kérhetsz tájékoztatást az adataidról, kérheted a helyesbítésüket, törlésüket vagy kezelésük korlátozását, tiltakozhatsz, és a hozzájárulásodat bármikor visszavonhatod (ez a korábbi kezelés jogszerűségét nem érinti). Kérésedet a fenti elérhetőségre küldheted.</p>
+  <p>Panaszt a Nemzeti Adatvédelmi és Információszabadság Hatóságnál (NAIH) tehetsz. <span class="helyorzo">[HELYŐRZŐ: a NAIH aktuális elérhetőségei]</span></p>
+
+  <h2>6. Változások</h2>
+  <p>Ha a tájékoztató lényegesen változik, az oldal újra megkérdezi a hozzájárulásodat. <span class="helyorzo">[HELYŐRZŐ: verzió és dátum]</span></p>
+
+  <p><a href="./">Vissza a főoldalra</a></p>
+</main>
+</body>
+</html>
