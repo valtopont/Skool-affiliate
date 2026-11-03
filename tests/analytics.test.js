@@ -19,6 +19,7 @@ const { chromium } = require('playwright');
 const ROOT = path.resolve(__dirname, '..');
 const BASE = 'https://valtopontonline.hu/';
 const AFF = 'https://www.skool.com/szabaduszo-affiliate/about?ref=9f8501e9ce73465b9c9ea3abf13c00f2';
+const KICSI = { width: 360, height: 640 };
 const MOBILE = { width: 390, height: 844 };
 const DESKTOP = { width: 1280, height: 900 };
 const TYPES = { '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 'application/javascript',
@@ -140,7 +141,7 @@ test('0. biztonsági zár: üres privacyUrl mellett az analitika nem aktív', as
   const s = await setup({ active: false });
   await s.page.goto(BASE);
   await s.page.waitForTimeout(800);
-  assert.equal(await s.page.locator('#consent-banner').count(), 0, 'nincs hozzájárulási sáv');
+  assert.equal(await s.page.locator('#consent-banner').count(), 0, 'nincs hozzájárulási ablak');
   assert.equal(await s.page.locator('.consent-settings').count(), 0, 'nincs Süti-beállítások gomb');
   assert.equal(await s.page.locator('a[href="privacy.html"]').count(), 0, 'nincs link a nem létező tájékoztatóra');
   assert.deepEqual(s.googleRequests(), []);
@@ -148,39 +149,75 @@ test('0. biztonsági zár: üres privacyUrl mellett az analitika nem aktív', as
   await s.close();
 });
 
-test('1. új látogató, döntés előtt: nincs Google-kérés, süti vagy tárolás', async () => {
-  const s = await setup();
-  await s.page.goto(BASE);
-  await s.page.waitForTimeout(1200);
-  assert.ok(await s.page.locator('#consent-banner').isVisible(), 'a sáv látszik');
-  // tömör sáv: 390×844-en a hero főcíme, alcíme és gombja a sáv fölött teljesen látszik
-  await s.page.evaluate(() => document.fonts.ready);
-  const fedes = await s.page.evaluate(() => {
-    const savTeteje = document.getElementById('consent-banner').getBoundingClientRect().top;
-    return ['#hero-cim', '.hero-kerdes', '#hero-cta'].map((sel) => [sel, Math.round(document.querySelector(sel).getBoundingClientRect().bottom), Math.round(savTeteje)]);
-  });
-  for (const [sel, alja, savTeteje] of fedes) assert.ok(alja <= savTeteje, `${sel} a sáv fölött (${alja} ≤ ${savTeteje})`);
-  assert.deepEqual(s.googleRequests(), []);
-  assert.deepEqual(await s.cookies(), []);
-  assert.equal(await s.page.evaluate(() => localStorage.length), 0);
-  assert.equal(await s.page.locator('script[src*="googletagmanager"]').count(), 0);
-  // a két gomb kinézete azonos, és billentyűzettel elérhető
-  const styles = await s.page.$$eval('.consent-btn', (bs) => bs.map((b) => {
-    const c = getComputedStyle(b); const r = b.getBoundingClientRect();
-    return [c.backgroundColor, c.color, c.fontSize, c.fontWeight, c.borderColor, Math.round(r.height), b.tabIndex];
-  }));
-  assert.equal(styles.length, 2);
-  assert.deepEqual(styles[0], styles[1], 'Elfogadom és Elutasítom egyforma');
-  assert.ok(styles[0][5] >= 44, 'a gombok legalább 44 px magasak (mobilon érinthetők)');
-  await s.page.keyboard.press('Tab');
-  const seen = [];
-  for (let i = 0; i < 40 && seen.length < 2; i++) {
-    const t = await s.page.evaluate(() => document.activeElement && document.activeElement.textContent);
-    if ((t === 'Elfogadom' || t === 'Elutasítom') && !seen.includes(t)) seen.push(t);
-    await s.page.keyboard.press('Tab');
+test('1. hozzájárulási ablak 360×640-en, 390×844-en és asztali nézetben; döntés előtt nincs Google-kérés, elutasítás után az oldal használható', async () => {
+  for (const viewport of [KICSI, MOBILE, DESKTOP]) {
+    const n = `${viewport.width}×${viewport.height}`;
+    const s = await setup({ viewport });
+    await s.page.goto(BASE);
+    await s.page.evaluate(() => document.fonts.ready);
+    await s.page.waitForTimeout(600);
+    const dlg = s.page.locator('#consent-banner [role="dialog"]');
+    assert.ok(await dlg.isVisible(), `${n}: az ablak látszik`);
+    assert.equal(await dlg.getAttribute('aria-modal'), 'true', `${n}: párbeszédablak (aria-modal)`);
+
+    // a doboz teljesen a képernyőn belül van, legfeljebb 420 px széles
+    const geo = await s.page.evaluate(() => {
+      const r = document.querySelector('.consent-doboz').getBoundingClientRect();
+      return { bal: r.left, fent: r.top, jobb: r.right, lent: r.bottom, szel: r.width, w: innerWidth, h: innerHeight };
+    });
+    assert.ok(geo.bal >= 0 && geo.fent >= 0 && geo.jobb <= geo.w && geo.lent <= geo.h, `${n}: a doboz a képernyőn belül (${JSON.stringify(geo)})`);
+    assert.ok(geo.szel <= 420, `${n}: a doboz legfeljebb 420 px széles (${geo.szel})`);
+
+    // mindkét gomb látszik, a képernyőn belül van és legalább 44 px magas
+    for (const nev of ['Elfogadom', 'Elutasítom']) {
+      const b = s.page.getByRole('button', { name: nev, exact: true });
+      assert.ok(await b.isVisible(), `${n}: ${nev} látszik`);
+      const bb = await b.boundingBox();
+      assert.ok(bb.height >= 44, `${n}: ${nev} legalább 44 px magas (${bb.height})`);
+      assert.ok(bb.y >= 0 && bb.y + bb.height <= viewport.height, `${n}: ${nev} a képernyőn belül`);
+    }
+
+    // a mögötte lévő oldal nem érhető el
+    assert.equal(await s.page.evaluate(() => document.querySelector('main').inert), true, `${n}: a háttér nem érhető el (inert)`);
+
+    // Tab-bal mindkét gomb elérhető, és a fókusz a dobozban marad (előre és visszafelé is)
+    const lattuk = new Set();
+    for (let i = 0; i < 8; i++) {
+      await s.page.keyboard.press('Tab');
+      const f = await s.page.evaluate(() => ({ benn: !!document.activeElement.closest('.consent-doboz'), szoveg: document.activeElement.textContent }));
+      assert.ok(f.benn, `${n}: ${i + 1}. Tab után a fókusz a dobozban`);
+      lattuk.add(f.szoveg);
+    }
+    for (let i = 0; i < 5; i++) {
+      await s.page.keyboard.press('Shift+Tab');
+      assert.ok(await s.page.evaluate(() => !!document.activeElement.closest('.consent-doboz')), `${n}: ${i + 1}. Shift+Tab után is a dobozban`);
+    }
+    assert.ok(lattuk.has('Elfogadom') && lattuk.has('Elutasítom'), `${n}: mindkét gomb elérhető Tab-bal`);
+
+    // első megjelenéskor Esc nem zárja be; az oldal nem görgethető
+    await s.page.keyboard.press('Escape');
+    assert.ok(await dlg.isVisible(), `${n}: első megjelenéskor Esc nem zárja be`);
+    await s.page.mouse.move(4, 4);
+    await s.page.mouse.wheel(0, 900);
+    await s.page.waitForTimeout(300);
+    assert.equal(await s.page.evaluate(() => window.scrollY), 0, `${n}: döntés előtt az oldal nem görgethető`);
+
+    // döntés előtt: nincs Google-kérés, süti vagy tárolás
+    assert.deepEqual(s.googleRequests(), [], `${n}: döntés előtt nincs Google-kérés`);
+    assert.deepEqual(await s.cookies(), [], `${n}: döntés előtt nincs süti`);
+    assert.equal(await s.page.evaluate(() => localStorage.length), 0, `${n}: döntés előtt nincs tárolás`);
+    assert.equal(await s.page.locator('script[src*="googletagmanager"]').count(), 0);
+
+    // elutasítás után az ablak eltűnik, az oldal azonnal használható és görgethető, nincs Google-kérés
+    await choose(s, 'Elutasítom');
+    assert.ok(!(await dlg.isVisible()), `${n}: elutasítás után az ablak bezárult`);
+    assert.equal(await s.page.evaluate(() => document.querySelector('main').inert), false, `${n}: elutasítás után a tartalom elérhető`);
+    await s.page.mouse.wheel(0, 900);
+    await s.page.waitForTimeout(400);
+    assert.ok(await s.page.evaluate(() => window.scrollY) > 0, `${n}: elutasítás után az oldal görgethető`);
+    assert.deepEqual(s.googleRequests(), [], `${n}: elutasítás után sincs Google-kérés`);
+    await s.close();
   }
-  assert.deepEqual(seen.sort(), ['Elfogadom', 'Elutasítom'], 'mindkét gomb elérhető Tab-bal');
-  await s.close();
 });
 
 test('2. elutasítás után és újratöltés után sincs GA4-mérés', async () => {
@@ -189,7 +226,7 @@ test('2. elutasítás után és újratöltés után sincs GA4-mérés', async ()
   await choose(s, 'Elutasítom');
   await s.page.reload();
   await s.page.waitForTimeout(800);
-  assert.ok(!(await s.page.locator('#consent-banner').isVisible().catch(() => false)), 'a sáv nem jelenik meg újra');
+  assert.ok(!(await s.page.locator('#consent-banner').isVisible().catch(() => false)), 'az ablak nem jelenik meg újra');
   await clickCta(s, s.page.locator('#hero-cta'));
   assert.deepEqual(s.googleRequests(), [], 'nincs Google-kérés');
   assert.deepEqual(await s.cookies(), [], 'nincs süti');
@@ -226,9 +263,17 @@ test('4. visszavonáskor a további GA4-események leállnak', async () => {
   await s.page.goto(BASE);
   await choose(s, 'Elfogadom');
   assert.ok((await s.cookies()).includes('_ga'), 'elfogadás után keletkezett GA-süti (helyettesítő)');
+  // a Süti-beállítások gomb ugyanazt az ablakot nyitja meg; innen Esc-re bezárható, a döntés változása nélkül
   await s.page.getByRole('button', { name: 'Süti-beállítások' }).click();
-  const focused = await s.page.evaluate(() => document.activeElement.className);
-  assert.equal(focused, 'consent-btn', 'a Süti-beállítások gomb a sáv első gombjára viszi a fókuszt');
+  assert.ok(await s.page.locator('#consent-banner [role="dialog"]').isVisible(), 'az ablak megnyílt');
+  assert.ok(await s.page.evaluate(() => !!document.activeElement.closest('.consent-doboz')), 'a fókusz a dobozban');
+  await s.page.keyboard.press('Escape');
+  await s.page.waitForTimeout(200);
+  assert.ok(!(await s.page.locator('#consent-banner').isVisible()), 'Esc bezárja');
+  const megmaradt = JSON.parse(await s.page.evaluate(() => localStorage.getItem('valtopont_analytics_consent')));
+  assert.equal(megmaradt.choice, 'granted', 'Esc után a döntés nem változott');
+  assert.equal(await s.page.evaluate(() => document.activeElement.textContent), 'Süti-beállítások', 'a fókusz visszakerül a gombra');
+  await s.page.getByRole('button', { name: 'Süti-beállítások' }).click();
   await Promise.all([s.page.waitForNavigation(), s.page.getByRole('button', { name: 'Elutasítom', exact: true }).click()]);
   await s.page.waitForTimeout(800);
   s.collects.length = 0;
@@ -336,7 +381,7 @@ test('10. a mobilos sticky CTA továbbra is működik', async () => {
   const s = await setup();
   await s.page.goto(BASE);
   assert.equal(await s.page.locator('#sticky-cta').evaluate((e) => getComputedStyle(e).display), 'none',
-    'amíg a sáv látszik, a sticky CTA rejtve van');
+    'amíg a hozzájárulási ablak látszik, a sticky CTA rejtve van');
   await choose(s, 'Elutasítom');
   const state = () => s.page.locator('#sticky-cta').evaluate((e) => [e.classList.contains('is-visible'), e.getAttribute('aria-hidden')]);
   // a script.js szabálya: a sáv rejtve, amíg a hero, a középső vagy a záró CTA látszik.
@@ -358,7 +403,7 @@ test('11. nincs vízszintes túlcsordulás 390 px-en és asztali nézetben', asy
     await s.page.goto(BASE);
     await s.page.waitForTimeout(300);
     const check = () => s.page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth);
-    assert.ok(await check(), `${viewport.width}px, sávval`);
+    assert.ok(await check(), `${viewport.width}px, hozzájárulási ablakkal`);
     await choose(s, 'Elutasítom');
     assert.ok(await check(), `${viewport.width}px, döntés után`);
     await s.close();

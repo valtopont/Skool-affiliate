@@ -16,7 +16,7 @@ Statikus HTML + CSS + egy kis JavaScript. Nincs build lépés, nincs függőség
 ├── style.css             # stílusok (színek a :root változóiban)
 ├── script.js             # beúszó elemek, mobilos sticky CTA, lebegő fejléc
 ├── analytics-config.js   # GA4 mérési azonosító + a végleges tájékoztató címe (privacyUrl)
-├── analytics.js          # hozzájárulási sáv, GA4 (Basic Consent Mode), affiliate_click esemény
+├── analytics.js          # hozzájárulási ablak, GA4 (Basic Consent Mode), affiliate_click esemény
 ├── privacy.html          # adatkezelési tájékoztató – TERVEZET, helyőrzőkkel, a buildből kizárva
 ├── jogi/                 # jogi vázlat és nyitott kérdések – a buildből kizárva
 ├── favicon.ico
@@ -56,16 +56,18 @@ A `data-cta` csak a méréshez kell; a link címe, a `target` és a `rel` nem v�
 ## Mérés (GA4, hozzájárulással)
 
 - GA4-tulajdon: „Kattintasmero”, mérési azonosító: `G-0G7W9BEY5S` (`analytics-config.js`).
-- **Biztonsági zár:** a mérés csak akkor aktív, ha az `analytics-config.js`-ben a `privacyUrl` ki van töltve. Amíg üres, nincs sáv, nincs süti, nincs tárolás és nincs Google-kérés.
+- **Biztonsági zár:** a mérés csak akkor aktív, ha az `analytics-config.js`-ben a `privacyUrl` ki van töltve. Amíg üres, nincs hozzájárulási ablak, nincs süti, nincs tárolás és nincs Google-kérés.
 - Bekapcsolás sorrendje: a `privacy.html` véglegesítése (jogi ellenőrzéssel) → a `privacy.html` törlése a `_config.yml` `exclude` listájából → `privacyUrl: 'privacy.html'` → link a tájékoztatóra a lábléc kapcsolati sorában.
-- Aktív állapotban tömör hozzájárulási sáv jelenik meg az oldal alján („Elfogadom” / „Elutasítom”, egymás mellett, egyforma gombok); mobilon (390×844) a hero főcíme, alcíme és gombja fölötte látható marad. A döntés a lábléc „Süti-beállítások” gombjával módosítható.
+- Aktív állapotban a döntésig középre úszó hozzájárulási ablak (párbeszédablak) jelenik meg minden kijelzőn: legfeljebb 420 px széles, telefonon 16 px oldalsó margóval. Mögötte az oldal elhomályosodik (8 px blur és sötét réteg; blur nélküli böngészőben erősebb sötét réteg), nem görgethető és nem érhető el; a fókusz a dobozban marad, a mobilos sticky CTA rejtve van.
+- Gombok egymás alatt: felül a kiemelt „Elfogadom” (narancs kitöltés, sötét szöveg), alatta a kiemelés nélküli „Elutasítom” (fehér, aláhúzott szöveg); mindkettő valódi gomb, legalább 44 px magas, egy kattintással működik. Beállítások gomb és X nincs.
+- Első megjelenéskor csak a két gombbal zárható; mindkét választás után az oldal azonnal használható (az elutasítás nem zár el a tartalomtól). A lábléc „Süti-beállítások” gombja ugyanezt az ablakot nyitja meg, onnan Esc-re is bezárható, a döntés változása nélkül.
 - Basic Consent Mode: döntés előtt és elutasítás után a `gtag.js` nem töltődik be. Az `ad_storage`, `ad_user_data`, `ad_personalization` mindig `denied`.
 - Események: egy `page_view` oldalbetöltésenként; `affiliate_click` a Skool-linkekre (`cta_location` = a `data-cta` értéke, `cta_text`, `ad_variant`, `utm_source`, `utm_medium`, `utm_campaign`, `utm_content`). Az `affiliate_click` nem bizonyít regisztrációt vagy jutalékot.
 - A GA4-be küldött oldal-URL csak a négy `utm_*` paramétert tartalmazza (`fbclid`, `gclid` és minden más elmarad).
 - **A GA4-fiókban kézzel állítandó:**
   - Bővített mérés → „Kimenő kattintások” KI és „Oldalváltások böngészőelőzmény alapján” KI (különben egy Skool-kattintás duplán számolódik);
   - Adatgyűjtés és -módosítás → Adatmegőrzés → Eseményadatok megőrzése: **14 hónap** → Mentés (nem visszamenőleges).
-- **Amit a GA4 nem lát:** azokról, akik nem fogadják el vagy figyelmen kívül hagyják a sávot, semmit – se látogatást, se forrást, se CTA-kattintást. A GA4-számok ezért alsó becslések.
+- **Amit a GA4 nem lát:** azokról, akik elutasítják a mérést vagy elhagyják az oldalt döntés nélkül, semmit – se látogatást, se forrást, se CTA-kattintást. A GA4-számok ezért alsó becslések.
 - Meta Pixel nincs a kódban.
 
 ### UTM (csak a saját landing URL-en, a Skool-linken soha)

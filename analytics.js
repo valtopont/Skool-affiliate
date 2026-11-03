@@ -3,9 +3,12 @@
  *
  * Működés röviden:
  * - Ha nincs érvényes Measurement ID VAGY nincs megadva a tájékoztató címe
- *   (analytics-config.js), semmi nem történik: nincs sáv, nincs tárolás,
+ *   (analytics-config.js), semmi nem történik: nincs hozzájárulási ablak, nincs tárolás,
  *   nincs kérés a Google felé.
- * - Ha aktív, és a látogató még nem döntött: megjelenik a hozzájárulási sáv.
+ * - Ha aktív, és a látogató még nem döntött: a képernyő közepén megjelenik a hozzájárulási
+ *   ablak (párbeszédablak). Mögötte az oldal elhomályosodik, nem görgethető és nem érhető el,
+ *   amíg a látogató nem választ; első megjelenéskor csak a két gombbal zárható.
+ *   Mindkét választás után az oldal azonnal használható (az elutasítás nem zár el a tartalomtól).
  *   Döntés előtt a gtag.js NEM töltődik be (Basic Consent Mode).
  * - Elfogadom → consent default (minden denied) → update (analytics_storage: granted)
  *   → gtag.js betöltése. A GA4 konfiguráció egyetlen page_view-t küld, és a Skool
@@ -14,7 +17,8 @@
  * - Elutasítás → a GA4 nem töltődik be. Ha korábban betöltött: letiltjuk,
  *   megkíséreljük törölni a GA-sütiket, és újratöltjük az oldalt, hogy a gtag.js
  *   ne maradjon a memóriában. A Google-hoz korábban már elküldött adatokat ez nem törli.
- * - A döntés a lábléc „Süti-beállítások” gombjával bármikor módosítható.
+ * - A döntés a lábléc „Süti-beállítások” gombjával bármikor módosítható: ugyanez az ablak nyílik meg,
+ *   és innen Esc-re is bezárható, a döntés változása nélkül.
  * - ?valtopont_test=1 SOHA nem ad hozzájárulást; csak a GA4 DebugView-jelölést
  *   kapcsolja be, ha a látogató már maga elfogadta a mérést.
  * - A mérés soha nem akadályozza a kattintást (nincs preventDefault, minden hiba elnyelve).
@@ -38,7 +42,11 @@
   var loaded = false;
   var disabled = false;
   var memoryChoice = null;                 // ha a localStorage nem elérhető, csak erre az oldalbetöltésre emlékszünk
-  var banner = null;
+  var banner = null;                       // a hozzájárulási ablak (átfedő réteg + párbeszédablak)
+  var dialogBox = null;
+  var dialogMode = null;                   // 'elso': csak gombbal zárható; 'beallitas': Esc-re is
+  var prevFocus = null;
+  var inertEls = [];
   var lastClick = null;
 
   /* ---------- hozzájárulás tárolása ---------- */
@@ -200,25 +208,26 @@
     hideBanner();
   }
 
-  /* ---------- hozzájárulási sáv ---------- */
+  /* ---------- hozzájárulási ablak (párbeszédablak) ---------- */
 
+  // Középre úszó doboz. Az „Elfogadom” kiemelt (narancs), az „Elutasítom” kiemelés nélküli,
+  // aláhúzott szöveggomb; mindkettő valódi gomb, legalább 44 px magas, egy kattintással működik.
+  // Beállítások gomb és bezáró X nincs.
   function buildBanner() {
     var el = document.createElement('div');
     el.className = 'consent';
     el.id = 'consent-banner';
-    el.setAttribute('role', 'region');
-    el.setAttribute('aria-labelledby', 'consent-title');
-    // Tömör sáv: mobilon a hero főcíme, alcíme és gombja a sáv fölött látható marad.
-    // A két döntési gomb egymás mellett, egyforma kinézettel – az elutasítás ugyanannyi lépés, mint az elfogadás.
+    el.hidden = true;
     el.innerHTML =
-      '<div class="consent-inner">' +
-        '<p class="consent-text"><strong class="consent-title" id="consent-title">Mérhetem az oldal használatát?</strong> ' +
-        'Elfogadás esetén a Google Analytics (GA4) sütikkel méri a megtekintést és a Skool-gombokra kattintást; ' +
-        'elutasításnál nem töltődik be. Később a „Süti-beállítások” gombbal módosíthatod. ' +
+      '<div class="consent-doboz" role="dialog" aria-modal="true" aria-label="Sütik és látogatásmérés" ' +
+          'aria-describedby="consent-text" tabindex="-1">' +
+        '<p class="consent-text" id="consent-text">Sütiket használunk a weboldalunkon, hogy a Google Analytics ' +
+        'segítségével mérni tudjuk a látogatottságot. Az Elfogadom gombra kattintva hozzájárulsz a sütik ' +
+        'használatához. A döntésedet bármikor módosíthatod az oldal alján. ' +
         '<a class="consent-link" href="' + privacyUrl + '" target="_blank" rel="noopener">Adatkezelési tájékoztató</a></p>' +
         '<div class="consent-actions">' +
-          '<button type="button" class="consent-btn" data-consent="granted">Elfogadom</button>' +
-          '<button type="button" class="consent-btn" data-consent="denied">Elutasítom</button>' +
+          '<button type="button" class="consent-btn consent-elfogad" data-consent="granted">Elfogadom</button>' +
+          '<button type="button" class="consent-btn consent-elutasit" data-consent="denied">Elutasítom</button>' +
         '</div>' +
       '</div>';
     el.addEventListener('click', function (e) {
@@ -226,24 +235,82 @@
       if (btn) setChoice(btn.getAttribute('data-consent'));
     });
     document.body.appendChild(el);
+    dialogBox = el.querySelector('.consent-doboz');
     return el;
   }
 
-  function showBanner() {
+  function focusables() {
+    return Array.prototype.slice.call(dialogBox.querySelectorAll('a[href], button:not([disabled])'));
+  }
+
+  // Fókuszcsapda: Tab és Shift+Tab a dobozon belül körbejár; Esc csak a beállításokból nyitott ablakot zárja.
+  function onDialogKeydown(e) {
+    if (!banner || banner.hidden) return;
+    if (e.key === 'Escape' || e.key === 'Esc') {
+      e.preventDefault();
+      if (dialogMode === 'beallitas') hideBanner();
+      return;
+    }
+    if (e.key !== 'Tab') return;
+    var f = focusables();
+    if (!f.length) return;
+    var first = f[0], last = f[f.length - 1], active = document.activeElement;
+    if (e.shiftKey) {
+      if (active === first || active === dialogBox || !dialogBox.contains(active)) { e.preventDefault(); last.focus(); }
+    } else if (active === last || !dialogBox.contains(active)) {
+      e.preventDefault(); first.focus();
+    }
+  }
+
+  // Tartalék az `inert`-et nem ismerő böngészőkhöz: ha a fókusz kikerülne, visszakerül a dobozba.
+  function onFocusIn(e) {
+    if (banner && !banner.hidden && !dialogBox.contains(e.target)) dialogBox.focus();
+  }
+
+  function setBackgroundInert(on) {
+    if (on) {
+      inertEls = [];
+      Array.prototype.forEach.call(document.body.children, function (child) {
+        if (child === banner || child.tagName === 'SCRIPT' || child.inert || child.hasAttribute('aria-hidden')) return;
+        child.inert = true;                      // nem fókuszálható, nem kattintható, a felolvasó sem éri el
+        child.setAttribute('aria-hidden', 'true');
+        inertEls.push(child);
+      });
+    } else {
+      inertEls.forEach(function (child) { child.inert = false; child.removeAttribute('aria-hidden'); });
+      inertEls = [];
+    }
+  }
+
+  function showBanner(mode) {
     if (!banner) banner = buildBanner();
+    if (!banner.hidden) return;
+    dialogMode = mode === 'beallitas' ? 'beallitas' : 'elso';
+    prevFocus = document.activeElement;
     banner.hidden = false;
-    document.body.classList.add('has-consent-banner');
-    // a sáv ne takarja el tartósan az oldal alját (pl. a láblécet)
-    document.body.style.paddingBottom = banner.offsetHeight + 'px';
+    document.documentElement.classList.add('consent-nyitva');   // görgetészár (style.css)
+    document.body.classList.add('has-consent-banner');          // a mobilos sticky CTA rejtve marad
+    setBackgroundInert(true);
+    document.addEventListener('keydown', onDialogKeydown, true);
+    document.addEventListener('focusin', onFocusIn, true);
+    try { dialogBox.focus({ preventScroll: true }); } catch (e) { dialogBox.focus(); }
   }
 
   function hideBanner() {
-    if (banner) banner.hidden = true;
+    if (!banner || banner.hidden) return;
+    banner.hidden = true;
+    document.documentElement.classList.remove('consent-nyitva');
     document.body.classList.remove('has-consent-banner');
-    document.body.style.paddingBottom = '';
+    setBackgroundInert(false);
+    document.removeEventListener('keydown', onDialogKeydown, true);
+    document.removeEventListener('focusin', onFocusIn, true);
+    if (prevFocus && prevFocus !== document.body && document.contains(prevFocus) && prevFocus.focus) {
+      try { prevFocus.focus({ preventScroll: true }); } catch (e) { prevFocus.focus(); }
+    }
+    prevFocus = null;
   }
 
-  // „Süti-beállítások” gomb a [data-consent-settings-slot] helyekre (pl. lábléc).
+  // „Süti-beállítások” gomb a [data-consent-settings-slot] helyekre (pl. lábléc): ugyanezt az ablakot nyitja meg.
   function addSettingsButtons() {
     var slots = document.querySelectorAll('[data-consent-settings-slot]');
     Array.prototype.forEach.call(slots, function (slot) {
@@ -251,11 +318,7 @@
       b.type = 'button';
       b.className = 'consent-settings';
       b.textContent = 'Süti-beállítások';
-      b.addEventListener('click', function () {
-        showBanner();
-        var first = banner && banner.querySelector('.consent-btn');
-        if (first) first.focus();
-      });
+      b.addEventListener('click', function () { showBanner('beallitas'); });
       slot.appendChild(b);
     });
   }
@@ -329,12 +392,12 @@
       };
     },
     lastClick: function () { return lastClick; },
-    openSettings: showBanner
+    openSettings: function () { showBanner('beallitas'); }
   };
 
   addSettingsButtons();
   var choice = readChoice();
   if (choice === 'granted') loadGa();
   else if (choice === 'denied') deleteGaCookies();
-  else showBanner();
+  else showBanner('elso');
 })();

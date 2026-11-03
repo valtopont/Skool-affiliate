@@ -1005,7 +1005,7 @@ html.reveal-ready .fenyut.reveal:not(.is-visible), html.reveal-ready .zaro-szint
 
 /* ======================================================================
    v1.6 – probléma → megoldás felépítés, új hero-szöveg, „Mi ez?” blokk, mentorcsoport,
-   hozzájárulási sáv (analytics.js; csak akkor jelenik meg, ha a mérés be van kapcsolva)
+   hozzájárulási ablak (analytics.js; csak akkor jelenik meg, ha a mérés be van kapcsolva)
    ====================================================================== */
 /* hero: a hosszabb, kérdő főcím kisebb betűvel, kiegyensúlyozott tördeléssel */
 .hero-cim { font-size: clamp(2.25rem, 1.15rem + 4.6vw, 3rem); line-height: 1; letter-spacing: -.024em; text-wrap: balance; max-width: 15em; }
@@ -1085,40 +1085,59 @@ html.reveal-ready .fenyut.reveal:not(.is-visible), html.reveal-ready .zaro-szint
   .hero-cim { font-size: clamp(3.2rem, .9rem + 3.6vw, 4.4rem); }
 }
 
-/* ---------- hozzájárulási sáv és „Süti-beállítások” gomb (analytics.js) ----------
-   Tömör sáv: mobilon (390×844) a hero főcíme, alcíme és gombja a sáv fölött látható marad.
-   A két döntési gomb egymás mellett, teljesen egyforma: az elutasítás ugyanolyan könnyű, mint az elfogadás. */
+/* ---------- hozzájárulási ablak és „Süti-beállítások” gomb (analytics.js) ----------
+   Középre úszó párbeszédablak minden kijelzőn: legfeljebb 420 px széles, telefonon 16 px oldalsó margó.
+   Mögötte az oldal elhomályosodik (8 px blur + sötét réteg), nem görgethető és nem érhető el, amíg a látogató
+   nem választ. Az „Elfogadom” kiemelt (narancs kitöltés), az „Elutasítom” kiemelés nélküli, aláhúzott szöveggomb;
+   mindkettő legalább 44 px magas. */
 .consent-settings {
   margin-left: 18px; padding: 0; border: 0; background: none; cursor: pointer;
   font: inherit; color: var(--szoveg-2); text-decoration: underline; text-underline-offset: 3px;
 }
 .consent {
-  position: fixed; left: 0; right: 0; bottom: 0; z-index: 70;
-  padding: 10px 14px calc(10px + env(safe-area-inset-bottom));
-  background: #07101f; border-top: 1px solid rgba(242, 140, 40, .45);
-  box-shadow: 0 -20px 40px -24px rgba(0, 0, 0, .9);
+  position: fixed; inset: 0; z-index: 90;
+  display: flex; align-items: center; justify-content: center;
+  padding: 16px; padding: max(16px, env(safe-area-inset-top)) 16px max(16px, env(safe-area-inset-bottom));
+  background: rgba(4, 9, 19, .62);
+  -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+  overscroll-behavior: contain;
+}
+/* ahol a böngésző nem tud homályosítani, erősebb sötét réteg */
+@supports not ((-webkit-backdrop-filter: blur(8px)) or (backdrop-filter: blur(8px))) {
+  .consent { background: rgba(4, 9, 19, .88); }
 }
 .consent[hidden] { display: none; }
-/* amíg a sáv látszik, a mobilos sticky CTA ne kerüljön alá */
+/* görgetészár, amíg az ablak látszik */
+html.consent-nyitva, html.consent-nyitva body { overflow: hidden; }
+/* amíg az ablak látszik, a mobilos sticky CTA rejtve marad */
 body.has-consent-banner .sticky-cta { display: none; }
-.consent-inner { max-width: 960px; margin: 0 auto; display: grid; gap: 8px; }
-.consent-text { font-size: .8125rem; line-height: 1.4; color: var(--szoveg-2); }
-.consent-title { font-weight: 760; color: var(--feher); }
-.consent-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-/* a két döntési gomb szándékosan teljesen egyforma: az elfogadás nem kap kiemelést */
-.consent-btn {
-  font: inherit; font-weight: 720; font-size: .9375rem; min-height: 44px; padding: 8px 12px; border-radius: 12px;
-  border: 1px solid rgba(159, 182, 214, .45); background: var(--navy-2); color: var(--feher); cursor: pointer;
+.consent-doboz {
+  width: min(100%, 420px); max-height: 100%; overflow-y: auto;
+  padding: 22px 20px 14px; border-radius: 20px;
+  background: linear-gradient(180deg, #0d2038 0%, #07101f 100%);
+  border: 1px solid rgba(242, 140, 40, .45);
+  box-shadow: 0 30px 80px -20px rgba(0, 0, 0, .9), inset 0 1px 0 rgba(255, 255, 255, .06);
 }
-.consent-btn:hover { background: var(--navy-3); }
-.consent-btn:focus-visible, .consent-settings:focus-visible, .consent-link:focus-visible { outline: 3px solid var(--narancs); outline-offset: 3px; }
+/* a doboz csak a fókusz kiindulópontja (nem kezelőelem); a látható fókuszkeret a gombokon és a linken van */
+.consent-doboz:focus, .consent-doboz:focus-visible { outline: none; }
+.consent-text { font-size: .9375rem; line-height: 1.55; color: var(--szoveg); }
 .consent-link { color: var(--narancs-halvany); text-underline-offset: 3px; white-space: nowrap; }
-@media (min-width: 720px) {
-  .consent { padding: 12px 20px calc(12px + env(safe-area-inset-bottom)); }
-  .consent-inner { grid-template-columns: 1fr auto; align-items: center; gap: 20px; }
-  .consent-text { font-size: .875rem; }
-  .consent-actions { grid-template-columns: 150px 150px; }
+.consent-actions { display: grid; gap: 6px; margin-top: 18px; }
+.consent-btn { font: inherit; cursor: pointer; width: 100%; min-height: 44px; }
+/* Elfogadom: narancs kitöltés, sötét szöveg, nyíl nélkül */
+.consent-elfogad {
+  min-height: 50px; padding: 12px 20px; border: 0; border-radius: 999px;
+  background: linear-gradient(180deg, #ffa552 0%, var(--narancs) 100%); color: var(--navy);
+  font-weight: 800; font-size: 1.0625rem;
+  box-shadow: 0 12px 28px -12px rgba(242, 140, 40, .6), inset 0 1px 0 rgba(255, 255, 255, .45);
 }
+/* Elutasítom: kitöltés és keret nélkül, fehér, aláhúzott szöveg – jól olvasható, valódi gomb */
+.consent-elutasit {
+  padding: 10px 16px; border: 0; border-radius: 12px; background: none; color: var(--feher);
+  font-weight: 650; font-size: 1rem; text-decoration: underline; text-underline-offset: 4px;
+}
+.consent-elutasit:hover { color: var(--narancs-halvany); }
+.consent-btn:focus-visible, .consent-settings:focus-visible, .consent-link:focus-visible { outline: 3px solid var(--narancs-halvany); outline-offset: 3px; }
 /* mobilon és tableten a hero nem nyúlik a teljes képernyőre: a „Mi ez?” blokk eleje már az első képernyőn látszik */
 @media (max-width: 959.98px) {
   .hero { min-height: 0; }

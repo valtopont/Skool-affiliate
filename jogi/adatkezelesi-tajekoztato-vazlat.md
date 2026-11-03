@@ -7,7 +7,7 @@
 
 - Hely: `privacy.html` (a repó gyökerében). Helyőrzők: `[HELYŐRZŐ: …]`, narancs színnel.
 - Amíg tervezet: a `_config.yml` kizárja a buildből, az `analytics-config.js` `privacyUrl` mezője üres → a mérés nem indul el, link sincs rá.
-- Véglegesítés lépései: helyőrzők kitöltése → jogi ellenőrzés → a „TERVEZET” doboz törlése → `privacy.html` törlése az `exclude` listából → `privacyUrl: 'privacy.html'` → lábléc-link a `HELYŐRZŐ` kommentnél.
+- Véglegesítés lépései: helyőrzők kitöltése → jogi ellenőrzés → a „TERVEZET” doboz törlése → `privacy.html` törlése az `exclude` listából → `privacyUrl: 'privacy.html'` → „Adatkezelési tájékoztató” link a lábléc Kapcsolat-sorába (a kapcsolati e-mail mellé).
 
 ## Nyitott jogi kérdések (JOGI KÉRDÉS), a mérés és az oldal szempontjából rangsorolva
 

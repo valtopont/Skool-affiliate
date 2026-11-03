@@ -6,11 +6,11 @@
  *   - privacyUrl: a VÉGLEGES, publikált adatkezelési tájékoztató relatív címe
  *     (például 'privacy.html').
  *
- * Amíg bármelyik üres vagy érvénytelen, nincs hozzájárulási sáv, nincs tárolás,
+ * Amíg bármelyik üres vagy érvénytelen, nincs hozzájárulási ablak, nincs tárolás,
  * és a Google felé semmilyen kérés nem megy ki. Így a mérés véletlenül sem
  * indulhat el úgy, hogy a látogató nem kapott tájékoztatást.
  *
- * Aktív állapotban a látogató először a hozzájárulási sávot látja. A GA4 csak
+ * Aktív állapotban a látogató először a hozzájárulási ablakot látja. A GA4 csak
  * akkor töltődik be, ha a látogató az „Elfogadom” gombra kattintott.
  *
  * Bekapcsolás sorrendje: 1) a privacy.html helyőrzőinek kitöltése és jogi ellenőrzése,
