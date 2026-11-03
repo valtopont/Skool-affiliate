@@ -14,3 +14,8 @@ exclude:
   # Belső dokumentumok:
   - README.md
   - videos/
+  - tests/
+  - jogi/
+  # Az adatkezelési tájékoztató TERVEZET (helyőrzőkkel): a véglegesítésig nem publikálódik.
+  # Véglegesítéskor ezt a sort törölni kell, és az analytics-config.js privacyUrl mezőjét kitölteni.
+  - privacy.html
