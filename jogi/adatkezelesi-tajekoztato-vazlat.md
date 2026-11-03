@@ -17,16 +17,25 @@
 4. **Ajánlói közlés** – elég-e a CTA-k melletti közlés és a #reklám jelölés (oldal és Facebook-posztok, később hirdetés)?
 5. **Ár közlése** – kell-e bruttó (áfával növelt) ár, vagy elég a „33 USD + áfa/hó” és a hivatkozás a Skool fizetési oldalára?
 6. **A céloldal saját kereseti állításai** – milyen felelősség terheli az ajánlót, ha a hivatkozott közösség oldala konkrét kereseti állításokat tesz?
-7. **Hirdetés** (csak hivatalos fiókfeloldás után) – reklámközlés, célzás, Meta-hirdetési szabályok; Meta Pixel csak külön döntéssel és hozzájárulással.
+7. **Hirdetés – FÜGGŐBEN.** A csatornáról a projektgazda még dönt; a hirdetési kérdéslista a döntés után készül. Megkerülés nem lehetséges megoldás. A mérés csatornafüggetlen (UTM + GA4); követőpixel csak külön döntéssel és hozzájárulással kerülhet be.
 8. **Az első jutalék adózása** – az első Skool-jutalék előtt tisztázandó: milyen formában és mikor kell bevallani a külföldi jutalékot (könyvelő/NAV).
 
-## Az oldalról szándékosan kihagyott elemek (helyük `HELYŐRZŐ` kommenttel jelölve)
+## Az oldalról szándékosan kihagyott elemek
 
-| Elem | Miért maradt ki | Mi kell a visszakerüléshez |
+Az `index.html`-ben nincs helyőrző komment (élesben bárki látná). Ha egy elem visszakerül, ez a lista mondja meg, hová.
+
+| Elem | Miért maradt ki | Mi kell a visszakerüléshez | Hová kerülne |
+|---|---|---|---|
+| Élő alkalmak | Nincs nyilvános megerősítés | Projektgazdai döntés + forrás | „Mit találsz” – Közösség és mentorcsoport; GYIK „Milyen segítségre számíthatok?” |
+| Üzemeltetői mondat / impresszum | Jogi döntés nélkül nem közölhető | 1. jogi kérdés lezárása | Lábléc, a kapcsolati sor fölött |
+| Link az adatkezelési tájékoztatóra | A `privacy.html` még tervezet | 2. jogi kérdés lezárása, `privacyUrl` kitöltése | Lábléc, a kapcsolati sorban |
+| „A közösség vezetőitől is kérdezhetsz” | Nem igazolt, ki válaszol | Forrás + projektgazdai döntés | GYIK „Milyen segítségre számíthatok?” |
+| „Magánszemély ajánlói oldala” | Üzemeltetői kérdéshez kötött | 1. jogi kérdés lezárása | Lábléc / „Mi ez?” |
+
+## Visszakerült elemek
+
+| Elem | Hol | Forrás |
 |---|---|---|
-| Élő alkalmak | Nincs nyilvános megerősítés | Projektgazdai döntés + forrás |
-| Javasolt lemondási határidő (pl. 24 óra) | Nincs friss súgóellenőrzés | Friss Skool-súgóellenőrzés |
-| Visszatérítés | Nincs friss súgóellenőrzés | Friss Skool-súgóellenőrzés |
-| Üzemeltetői mondat / impresszum | Jogi döntés nélkül nem közölhető | 1. jogi kérdés lezárása |
-| „A közösség vezetőitől is kérdezhetsz” | Nem igazolt, ki válaszol | Forrás + projektgazdai döntés |
-| „Magánszemély ajánlói oldala” | Üzemeltetői kérdéshez kötött | 1. jogi kérdés lezárása |
+| Lemondás menete (webes menü és mobilapp), a tagság a számlázási időszak végéig tart | GYIK „Hogyan mondhatom le?” | Skool-súgó, 99. és 116. cikk, és a menü a projektgazda fiókjában, 2026-11-02 |
+| Javasolt lemondás legalább 24 órával a következő terhelés előtt | ugyanott | ugyanaz |
+| Nincs automatikus visszatérítés; a feltételeket a közösség adminjai határozzák meg | ugyanott | ugyanaz |

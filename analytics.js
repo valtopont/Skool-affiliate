@@ -208,17 +208,18 @@
     el.id = 'consent-banner';
     el.setAttribute('role', 'region');
     el.setAttribute('aria-labelledby', 'consent-title');
+    // Tömör sáv: mobilon a hero főcíme, alcíme és gombja a sáv fölött látható marad.
+    // A két döntési gomb egymás mellett, egyforma kinézettel – az elutasítás ugyanannyi lépés, mint az elfogadás.
     el.innerHTML =
       '<div class="consent-inner">' +
-        '<p class="consent-title" id="consent-title">Mérhetem, hogyan használod az oldalt?</p>' +
-        '<p class="consent-text">Ha elfogadod, a Google Analytics (GA4) sütikkel méri az oldal megtekintését ' +
-        'és a Skool-gombokra kattintást. Ha elutasítod, a Google Analytics nem töltődik be. ' +
-        'A döntésed az oldal alján, a „Süti-beállítások” gombbal bármikor módosíthatod.</p>' +
+        '<p class="consent-text"><strong class="consent-title" id="consent-title">Mérhetem az oldal használatát?</strong> ' +
+        'Elfogadás esetén a Google Analytics (GA4) sütikkel méri a megtekintést és a Skool-gombokra kattintást; ' +
+        'elutasításnál nem töltődik be. Később a „Süti-beállítások” gombbal módosíthatod. ' +
+        '<a class="consent-link" href="' + privacyUrl + '" target="_blank" rel="noopener">Adatkezelési tájékoztató</a></p>' +
         '<div class="consent-actions">' +
           '<button type="button" class="consent-btn" data-consent="granted">Elfogadom</button>' +
           '<button type="button" class="consent-btn" data-consent="denied">Elutasítom</button>' +
         '</div>' +
-        '<a class="consent-link" href="' + privacyUrl + '" target="_blank" rel="noopener">Adatkezelési tájékoztató</a>' +
       '</div>';
     el.addEventListener('click', function (e) {
       var btn = e.target.closest('[data-consent]');

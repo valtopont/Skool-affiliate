@@ -153,6 +153,13 @@ test('1. új látogató, döntés előtt: nincs Google-kérés, süti vagy táro
   await s.page.goto(BASE);
   await s.page.waitForTimeout(1200);
   assert.ok(await s.page.locator('#consent-banner').isVisible(), 'a sáv látszik');
+  // tömör sáv: 390×844-en a hero főcíme, alcíme és gombja a sáv fölött teljesen látszik
+  await s.page.evaluate(() => document.fonts.ready);
+  const fedes = await s.page.evaluate(() => {
+    const savTeteje = document.getElementById('consent-banner').getBoundingClientRect().top;
+    return ['#hero-cim', '.hero-kerdes', '#hero-cta'].map((sel) => [sel, Math.round(document.querySelector(sel).getBoundingClientRect().bottom), Math.round(savTeteje)]);
+  });
+  for (const [sel, alja, savTeteje] of fedes) assert.ok(alja <= savTeteje, `${sel} a sáv fölött (${alja} ≤ ${savTeteje})`);
   assert.deepEqual(s.googleRequests(), []);
   assert.deepEqual(await s.cookies(), []);
   assert.equal(await s.page.evaluate(() => localStorage.length), 0);
@@ -418,7 +425,7 @@ test('13. nincs JavaScript-hiba (asztali nézet, aktív és inaktív konfigurác
 // nem kerülhet vissza; az og:-címkék és a favicon megvannak, a hivatkozott fájlok léteznek.
 test('14. tartalmi zárak, Open Graph-címkék és favicon', async () => {
   const html = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');
-  for (const tiltott of [/próba/i, /ingyen/i, /7\s*nap/i, /JÓVÁHAGYANDÓ/, /\bKELL\b/, /fbq\(/, /garant[aá]lt (bevétel|kereset)[^.]*(lesz|kapsz)/i]) {
+  for (const tiltott of [/próba/i, /ingyen/i, /7\s*nap/i, /JÓVÁHAGYANDÓ/, /HELYŐRZŐ/, /\bKELL\b/, /fbq\(/, /garant[aá]lt (bevétel|kereset)[^.]*(lesz|kapsz)/i]) {
     assert.ok(!tiltott.test(html), `nincs ilyen szöveg az oldalon: ${tiltott}`);
   }
   const s = await setup({ active: false });

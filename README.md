@@ -35,7 +35,7 @@ A `_config.yml` `exclude` listája a belső fájlokat kizárja a weboldal-buildb
 - **Díj:** 33 USD + áfa/hó, havonta automatikusan megújuló tagság. Próbaidő nincs (a korábbi 7 napos próba 2026. november 1-jén megszűnt, nem írható vissza).
 - **Ajánlói közlés a CTA-k közelében:** fejléc („Ajánlói link”), hero ajánlatsor („Skool · 33 USD + áfa/hó · ajánlói link”), „Mi ez?” blokk (teljes közlés), Ár és feltételek (teljes közlés a CTA fölött), záró CTA és mobilos sticky sáv (rövid közlés), lábléc (teljes ajánlói tájékoztatás).
 - Az „ellenőrizd a Skoolon” mondat csak egyszer szerepel, az Ár és feltételek résznél.
-- Forrásjelölés HTML-kommentben, ahol az állítás tagi megerősítésen vagy képernyőképen alapul. A `HELYŐRZŐ` kommentek a jogi vagy friss ellenőrzésre váró részek helyét jelölik; látható szöveg nem tartozik hozzájuk.
+- Forrásjelölés HTML-kommentben, ahol az állítás tagi megerősítésen, súgócikken vagy képernyőképen alapul. Helyőrző vagy belső munkakomment nem kerülhet az `index.html`-be (élesben bárki látná); a kihagyott elemek listája és helye: `jogi/adatkezelesi-tajekoztato-vazlat.md`.
 
 ## Az öt CTA
 
@@ -57,8 +57,8 @@ A `data-cta` csak a méréshez kell; a link címe, a `target` és a `rel` nem v�
 
 - GA4-tulajdon: „Kattintasmero”, mérési azonosító: `G-0G7W9BEY5S` (`analytics-config.js`).
 - **Biztonsági zár:** a mérés csak akkor aktív, ha az `analytics-config.js`-ben a `privacyUrl` ki van töltve. Amíg üres, nincs sáv, nincs süti, nincs tárolás és nincs Google-kérés.
-- Bekapcsolás sorrendje: a `privacy.html` véglegesítése (jogi ellenőrzéssel) → a `privacy.html` törlése a `_config.yml` `exclude` listájából → `privacyUrl: 'privacy.html'` → a lábléc helyőrzőjénél link a tájékoztatóra.
-- Aktív állapotban hozzájárulási sáv jelenik meg („Elfogadom” / „Elutasítom”, egyforma gombok); a döntés a lábléc „Süti-beállítások” gombjával módosítható.
+- Bekapcsolás sorrendje: a `privacy.html` véglegesítése (jogi ellenőrzéssel) → a `privacy.html` törlése a `_config.yml` `exclude` listájából → `privacyUrl: 'privacy.html'` → link a tájékoztatóra a lábléc kapcsolati sorában.
+- Aktív állapotban tömör hozzájárulási sáv jelenik meg az oldal alján („Elfogadom” / „Elutasítom”, egymás mellett, egyforma gombok); mobilon (390×844) a hero főcíme, alcíme és gombja fölötte látható marad. A döntés a lábléc „Süti-beállítások” gombjával módosítható.
 - Basic Consent Mode: döntés előtt és elutasítás után a `gtag.js` nem töltődik be. Az `ad_storage`, `ad_user_data`, `ad_personalization` mindig `denied`.
 - Események: egy `page_view` oldalbetöltésenként; `affiliate_click` a Skool-linkekre (`cta_location` = a `data-cta` értéke, `cta_text`, `ad_variant`, `utm_source`, `utm_medium`, `utm_campaign`, `utm_content`). Az `affiliate_click` nem bizonyít regisztrációt vagy jutalékot.
 - A GA4-be küldött oldal-URL csak a négy `utm_*` paramétert tartalmazza (`fbclid`, `gclid` és minden más elmarad).
@@ -70,11 +70,16 @@ A `data-cta` csak a méréshez kell; a link címe, a `target` és a `rel` nem v�
 
 ### UTM (csak a saját landing URL-en, a Skool-linken soha)
 
+A mérés csatornafüggetlen: bármely forrás ugyanazzal a négy paraméterrel jelölhető.
+
 ```
-https://valtopontonline.hu/?utm_source=facebook&utm_medium=oldal|csoport|komment|profil|paid_social&utm_campaign=<kampány>&utm_content=<posztkód vagy hirdetésváltozat>
+https://valtopontonline.hu/?utm_source=<csatorna>&utm_medium=<forma>&utm_campaign=<kampány>&utm_content=<posztkód vagy változat>
 ```
 
-Hirdetésnél `utm_medium=paid_social`, és az `utm_content` első betűje (`A_…`, `B_…`) a GA4-ben `ad_variant`-ként külön látszik.
+- `utm_source`: a csatorna kisbetűvel, pl. `facebook`, `instagram`, `youtube`, `email`.
+- `utm_medium`: a forma, pl. `oldal`, `csoport`, `komment`, `profil`; fizetett megjelenésnél `paid_social` vagy `cpc`.
+- Csak betű, szám, `_`, `-` és `.` engedett; más karakterrel az érték nem kerül a mérésbe.
+- Ha az `utm_content` egy betűvel és `_` vagy `-` jellel kezdődik (`A_…`, `B-…`), a GA4-ben `ad_variant`-ként külön is látszik – változatok összevetésére bármely csatornán.
 
 ## Tesztek
 
