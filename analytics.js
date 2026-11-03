@@ -222,7 +222,7 @@
       '<div class="consent-doboz" role="dialog" aria-modal="true" aria-label="Sütik és látogatásmérés" ' +
           'aria-describedby="consent-text" tabindex="-1">' +
         '<p class="consent-text" id="consent-text">Sütiket használunk a weboldalunkon, hogy a Google Analytics ' +
-        'segítségével mérni tudjuk a látogatottságot. Az Elfogadom gombra kattintva hozzájárulsz a sütik ' +
+        'segítségével mérni tudjuk a látogatottságot és a kattintásokat. Az Elfogadom gombra kattintva hozzájárulsz a sütik ' +
         'használatához. A döntésedet bármikor módosíthatod az oldal alján. ' +
         '<a class="consent-link" href="' + privacyUrl + '" target="_blank" rel="noopener">Adatkezelési tájékoztató</a></p>' +
         '<div class="consent-actions">' +

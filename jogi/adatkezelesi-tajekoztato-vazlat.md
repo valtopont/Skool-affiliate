@@ -13,12 +13,15 @@
 
 1. **Üzemeltetői adatok (Ektv.)** – magánszemélyként mely adatokat kell nyilvánosan közölni, és van-e személyes adatot kímélő megoldás? (Projektgazdai vállalás: név, e-mail; vállalkozási adatok, ha lesz és kell.)
 2. **Adatkezelési tájékoztató a GA4-hez** – a `privacy.html` helyőrzői: adatkezelő, címzett (Google), EU-n kívüli adattovábbítás jogalapja, megőrzési idő, sütik élettartama.
-3. **Technikai naplók és e-mail** – jogalap és megőrzés (GitHub Pages, levelezőszolgáltató).
-4. **Ajánlói közlés** – elég-e a CTA-k melletti közlés és a #reklám jelölés (oldal és Facebook-posztok, később hirdetés)?
-5. **Ár közlése** – kell-e bruttó (áfával növelt) ár, vagy elég a „33 USD + áfa/hó” és a hivatkozás a Skool fizetési oldalára?
-6. **A céloldal saját kereseti állításai** – milyen felelősség terheli az ajánlót, ha a hivatkozott közösség oldala konkrét kereseti állításokat tesz?
-7. **Hirdetés – FÜGGŐBEN.** A csatornáról a projektgazda még dönt; a hirdetési kérdéslista a döntés után készül. Megkerülés nem lehetséges megoldás. A mérés csatornafüggetlen (UTM + GA4); követőpixel csak külön döntéssel és hozzájárulással kerülhet be.
-8. **Az első jutalék adózása** – az első Skool-jutalék előtt tisztázandó: milyen formában és mikor kell bevallani a külföldi jutalékot (könyvelő/NAV).
+3. **Hozzájárulási ablak – a gombok hangsúlya** – az „Elfogadom” kiemelt (narancs kitöltés), az „Elutasítom” kiemelés nélküli, aláhúzott szöveggomb (projektgazdai döntés, 2026-11-03). Megfelel-e ez az önkéntes hozzájárulás követelményének, vagy a kevésbé hangsúlyos elutasítás félrevezető kialakításnak minősülhet?
+4. **Hozzájárulási ablak – a tájékoztatás elégsége** – az ablak szövege: „Sütiket használunk a weboldalunkon, hogy a Google Analytics segítségével mérni tudjuk a látogatottságot és a kattintásokat. Az Elfogadom gombra kattintva hozzájárulsz a sütik használatához. A döntésedet bármikor módosíthatod az oldal alján.”, utána link az adatkezelési tájékoztatóra. Elég-e ez a `privacy.html` részleteivel együtt (mért adatok, szolgáltató, megőrzés, visszavonás)?
+5. **A hozzájárulás visszavonása** – a döntés módosítása két kattintás (a lábléc „Süti-beállítások” gombja, majd a választás), az elfogadás egy. Megfelel-e ez annak a követelménynek, hogy a visszavonás ugyanolyan egyszerű legyen, mint a hozzájárulás megadása (GDPR 7. cikk (3) bekezdés)?
+6. **Technikai naplók és e-mail** – jogalap és megőrzés (GitHub Pages, levelezőszolgáltató).
+7. **Ajánlói közlés** – elég-e a CTA-k melletti közlés és a #reklám jelölés (oldal és Facebook-posztok, később hirdetés)?
+8. **Ár közlése** – kell-e bruttó (áfával növelt) ár, vagy elég a „33 USD + áfa/hó” és a hivatkozás a Skool fizetési oldalára?
+9. **A céloldal saját kereseti állításai** – milyen felelősség terheli az ajánlót, ha a hivatkozott közösség oldala konkrét kereseti állításokat tesz?
+10. **Hirdetés – FÜGGŐBEN.** A csatornáról a projektgazda még dönt; a hirdetési kérdéslista a döntés után készül. Megkerülés nem lehetséges megoldás. A mérés csatornafüggetlen (UTM + GA4); követőpixel csak külön döntéssel és hozzájárulással kerülhet be.
+11. **Az első jutalék adózása** – az első Skool-jutalék előtt tisztázandó: milyen formában és mikor kell bevallani a külföldi jutalékot (könyvelő/NAV).
 
 ## Az oldalról szándékosan kihagyott elemek
 
