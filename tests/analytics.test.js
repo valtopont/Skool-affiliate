@@ -410,7 +410,7 @@ test('11. nincs vízszintes túlcsordulás 390 px-en és asztali nézetben', asy
   }
 });
 
-test('12. az affiliate-közlések olvashatók és megfelelő kontrasztúak', async () => {
+test('12. az egyetlen reklám- és ajánlói közlés (.reklam-doboz) olvasható, megfelelő kontrasztú, a hero CTA előtt áll', async () => {
   const s = await setup();
   await s.page.goto(BASE);
   await choose(s, 'Elutasítom');
@@ -432,25 +432,20 @@ test('12. az affiliate-közlések olvashatók és megfelelő kontrasztúak', asy
       }
       return ['rgb(255, 255, 255)'];
     }
-    return ['.ajanlat-sor', '#ismerd-meg .cta-note', '.lablec-kozles'].map((sel) => {
-      const el = document.querySelector(sel); const cs = getComputedStyle(el);
-      const a = lum(cs.color);
-      const ratio = Math.min(...bgs(el).map((c) => { const b = lum(c); return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05); }));
-      return { sel, text: el.textContent, size: parseFloat(cs.fontSize), ratio, visible: el.getBoundingClientRect().height > 0 };
-    });
+    const el = document.querySelector('.reklam-doboz'); const cs = getComputedStyle(el);
+    const a = lum(cs.color);
+    const ratio = Math.min(...bgs(el).map((c) => { const b = lum(c); return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05); }));
+    return { text: el.textContent, size: parseFloat(cs.fontSize), ratio, visible: el.getBoundingClientRect().height > 0 };
   });
-  const [hero, dontes, footer] = info;
-  assert.equal(hero.text.replace(/\s+/g, ' '), 'Skool·33 USD + áfa/hó·ajánlói link');
-  assert.equal(dontes.text, 'Ajánlói link: ha ezen keresztül csatlakozol, a Váltópont üzemeltetője jutalékot kaphat.');
-  assert.equal(footer.text, 'Ajánlói tájékoztatás: A Skool-linkeken keresztül történő csatlakozás után a Váltópont üzemeltetője jutalékot kaphat. A bemutatott Skool-közösséget nem a Váltópont üzemelteti.');
-  for (const i of info) {
-    assert.ok(i.visible, `${i.sel} látható`);
-    assert.ok(i.size >= 12, `${i.sel} legalább 12 px (${i.size})`);
-    assert.ok(i.ratio >= 4.5, `${i.sel} kontraszt legalább 4,5:1 (${i.ratio.toFixed(2)})`);
-  }
-  // az ajánlói sor közvetlenül a hero CTA előtt, a teljes közlés közvetlenül a középső CTA előtt áll
-  assert.equal(await s.page.evaluate(() => document.getElementById('hero-cta').previousElementSibling.className), 'ajanlat-sor');
-  assert.equal(await s.page.evaluate(() => document.getElementById('kozepso-cta').previousElementSibling.className), 'cta-note');
+  assert.ok(info.visible, '.reklam-doboz látható');
+  assert.ok(info.size >= 12, `.reklam-doboz legalább 12 px (${info.size})`);
+  assert.ok(info.ratio >= 4.5, `.reklam-doboz kontraszt legalább 4,5:1 (${info.ratio.toFixed(2)})`);
+  assert.equal(info.text, 'Reklám – ajánlói link Ha az oldal gombjain keresztül csatlakozol, a Váltópont üzemeltetője jutalékot kaphat. Neked ez nem kerül többe. A közösséget nem a Váltópont üzemelteti.');
+  // a reklámdoboz közvetlenül a hero CTA előtt áll
+  assert.equal(await s.page.evaluate(() => document.getElementById('hero-cta').previousElementSibling.className), 'reklam-doboz');
+  // a látható szövegben a „jutalékot kaphat” pontosan egyszer szerepel (a közlés egy helyen van)
+  const lathato = await s.page.evaluate(() => document.body.innerText);
+  assert.equal((lathato.match(/jutalékot kaphat/g) || []).length, 1, 'a „jutalékot kaphat” pontosan egyszer szerepel');
   await s.close();
 });
 

@@ -33,7 +33,7 @@ A `_config.yml` `exclude` listája a belső fájlokat kizárja a weboldal-buildb
 - Nincs bevételi ígéret, garancia, kitalált vélemény vagy szám, álsürgetés, visszaszámláló.
 - A közösség vezetőjének neve és a hozzá kapcsolható más márkanév sehol nem szerepelhet (szöveg, metaadat, komment).
 - **Díj:** 33 USD + áfa/hó, havonta automatikusan megújuló tagság. Próbaidő nincs (a korábbi 7 napos próba 2026. november 1-jén megszűnt, nem írható vissza).
-- **Ajánlói közlés a CTA-k közelében:** fejléc („Ajánlói link”), hero ajánlatsor („Skool · 33 USD + áfa/hó · ajánlói link”), „Mi ez?” blokk (teljes közlés), Ár és feltételek (teljes közlés a CTA fölött), záró CTA és mobilos sticky sáv (rövid közlés), lábléc (teljes ajánlói tájékoztatás).
+- **Ajánlói közlés egy helyen:** a hero CTA előtti „Reklám – ajánlói link” dobozban (`.reklam-doboz`): ha az oldal gombjain keresztül csatlakozol, a Váltópont üzemeltetője jutalékot kaphat; neked ez nem kerül többe; a közösséget nem a Váltópont üzemelteti. Máshol (fejléc, „Mi ez?”, Ár és feltételek, záró CTA, sticky sáv, lábléc) nincs külön ajánlói közlés.
 - Az „ellenőrizd a Skoolon” mondat csak egyszer szerepel, az Ár és feltételek résznél.
 - Forrásjelölés HTML-kommentben, ahol az állítás tagi megerősítésen, súgócikken vagy képernyőképen alapul. Helyőrző vagy belső munkakomment nem kerülhet az `index.html`-be (élesben bárki látná); a kihagyott elemek listája és helye: `jogi/adatkezelesi-tajekoztato-vazlat.md`.
 
