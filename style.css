@@ -1147,3 +1147,7 @@ body.has-consent-banner .sticky-cta { display: none; }
 /* a menetrend lépései felülre igazodnak (a rövidebb szövegű lépés címe ne csússzon lejjebb) */
 .menetrend li { align-content: start; }
 .zaro-bongeszo { margin-top: -4px; color: var(--szoveg); }
+
+/* ---------- egyetlen reklám- és ajánlói közlés a hero CTA előtt ---------- */
+.reklam-doboz { grid-column: 1 / -1; margin: 0; padding: 10px 12px; border: 1px solid rgba(255, 217, 160, .32); border-radius: 10px; background: rgba(4, 9, 19, .55); font-size: .8125rem; line-height: 1.45; color: var(--szoveg); }
+.reklam-doboz strong { display: block; margin-bottom: 3px; font-family: var(--mono); font-size: .75rem; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: var(--narancs-halvany); }
