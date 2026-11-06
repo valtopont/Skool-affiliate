@@ -17,7 +17,7 @@
 4. **Hozzájárulási ablak – a tájékoztatás elégsége** – az ablak szövege: „Sütiket használunk a weboldalunkon, hogy a Google Analytics segítségével mérni tudjuk a látogatottságot és a kattintásokat. Az Elfogadom gombra kattintva hozzájárulsz a sütik használatához. A döntésedet bármikor módosíthatod az oldal alján.”, utána link az adatkezelési tájékoztatóra. Elég-e ez a `privacy.html` részleteivel együtt (mért adatok, szolgáltató, megőrzés, visszavonás)?
 5. **A hozzájárulás visszavonása** – a döntés módosítása két kattintás (a lábléc „Süti-beállítások” gombja, majd a választás), az elfogadás egy. Megfelel-e ez annak a követelménynek, hogy a visszavonás ugyanolyan egyszerű legyen, mint a hozzájárulás megadása (GDPR 7. cikk (3) bekezdés)?
 6. **Technikai naplók és e-mail** – jogalap és megőrzés (GitHub Pages, levelezőszolgáltató).
-7. **Ajánlói közlés** – elég-e a CTA-k melletti közlés és a #reklám jelölés (oldal és Facebook-posztok, később hirdetés)?
+7. **Ajánlói közlés** – elég-e az egyetlen, a hero CTA előtti „Reklám – ajánlói link” doboz (a többi négy gomb mellett nincs külön közlés), és a #reklám jelölés (Facebook-posztok, később hirdetés)?
 8. **Ár közlése** – kell-e bruttó (áfával növelt) ár, vagy elég a „33 USD + áfa/hó” és a hivatkozás a Skool fizetési oldalára?
 9. **A céloldal saját kereseti állításai** – milyen felelősség terheli az ajánlót, ha a hivatkozott közösség oldala konkrét kereseti állításokat tesz?
 10. **Hirdetés – FÜGGŐBEN.** A csatornáról a projektgazda még dönt; a hirdetési kérdéslista a döntés után készül. Megkerülés nem lehetséges megoldás. A mérés csatornafüggetlen (UTM + GA4); követőpixel csak külön döntéssel és hozzájárulással kerülhet be.
